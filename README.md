@@ -1,8 +1,11 @@
-# Azure Cosmos DB: Table API
-Azure Cosmos DB provides the [Table API](https://docs.microsoft.com/azure/cosmosdb/create-table-dotnet.md) for applications that need a key-value store with a schema-less design. Azure Cosmos DB supports throughput-optimized tables (informally called "premium tables"), currently in public preview.
+# Getting started with Azure Cosmos DB: Table API
+[Azure Cosmos DB](http://cosmosdb.com) is a globally distributed, multi-model database for mission critical applications. Azure Cosmos DB provides the [Table API](https://docs.microsoft.com/azure/cosmosdb/create-table-dotnet.md) for applications that need a key-value store with a schema-less design. Azure Cosmos DB supports throughput-optimized tables (informally called "premium tables"), currently in public preview.
+
+## About this sample: CRUD and Query using the Azure Table storage preview SDK
 
 During the preview, Azure Cosmos DB supports the Table API using the .NET SDK. You can download the Azure Storage Preview SDK SDK from Nuget, that has the same classes and method signatures as the public Azure storage SDK, but also has the ability to connect to Azure Cosmos DB accounts using the Table API. This sample is for developers who are familiar with the Azure Table storage SDK, and would like to use the premium features available using Azure Cosmos DB. It is based on Get Started with Azure Table storage using .NET and shows how to take advantage of additional capabilities like secondary indexes, provisioned throughput, and multi-homing. 
 
+## Premium tables overview
 If you currently use Azure Table storage, you gain the following benefits with the preview:
 
 * Turn-key global distribution with multi-homing and automatic and manual failvoers
