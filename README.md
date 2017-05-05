@@ -5,6 +5,10 @@
 
 During the preview, Azure Cosmos DB supports the Table API using the .NET SDK. You can download the Azure Storage Preview SDK SDK from Nuget, that has the same classes and method signatures as the public Azure storage SDK, but also has the ability to connect to Azure Cosmos DB accounts using the Table API. This sample is for developers who are familiar with the Azure Table storage SDK, and would like to use the premium features available using Azure Cosmos DB. It is based on Get Started with Azure Table storage using .NET and shows how to take advantage of additional capabilities like secondary indexes, provisioned throughput, and multi-homing. 
 
+* Open in Visual Studio
+* Update the connection string to your Azure Cosmos DB account endpoint and keys, e.g. `<add key="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=account-name;AccountKey=account-key;EndpointSuffix=core.windows.net" />`
+* Run the application
+
 ## Premium tables overview
 If you currently use Azure Table storage, you gain the following benefits with the preview:
 
