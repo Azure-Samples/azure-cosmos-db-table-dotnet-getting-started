@@ -84,7 +84,7 @@
                     RowKey = Guid.NewGuid().ToString(),
                     Email = $"{GetRandomString(6)}@contoso.com",
                     PhoneNumber = "425-555-0102",
-                    Bio = GetRandomString(1000)                   
+                    Bio = GetRandomString(1000)
                 };
 
                 // Azure Cosmos DB is designed for guaranteed low latency at any scale, across the world
@@ -234,5 +234,5 @@
 
             public string Bio { get; set; }
         }
-    }    
+    }
 }

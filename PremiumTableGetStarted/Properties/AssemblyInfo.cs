@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TableSBS")]
+[assembly: AssemblyTitle("PremiumTableGetStarted")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TableSBS")]
+[assembly: AssemblyProduct("PremiumTableGetStarted")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a17f535b-8a9a-456a-b5b2-6d09b10fc895")]
+[assembly: Guid("92b301ef-a126-4256-923e-a7b2438d744d")]
 
 // Version information for an assembly consists of the following four values:
 //
