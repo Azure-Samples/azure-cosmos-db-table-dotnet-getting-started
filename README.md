@@ -3,7 +3,7 @@
 
 ## About this sample: CRUD and Query using the Azure Table storage preview SDK
 
-During the preview, Azure Cosmos DB supports the Table API using the .NET SDK. You can download the [Azure Storage Preview SDK from Nuget](https://www.nuget.org/packages/WindowsAzure.Storage/8.2.0-preview), that has the same classes and method signatures as the public Azure storage SDK, but also has the ability to connect to Azure Cosmos DB accounts using the Table API.
+During the preview, Azure Cosmos DB supports the Table API using the .NET SDK. You can download the [Azure Storage Preview SDK from Nuget](https://www.nuget.org/packages/WindowsAzure.Storage-PremiumTable/0.1.0-preview), that has the same classes and method signatures as the public Azure storage SDK, but also has the ability to connect to Azure Cosmos DB accounts using the Table API.
 
 ![Premium Table with Azure Cosmos DB](premium-tables.png) 
 
