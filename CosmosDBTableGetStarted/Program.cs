@@ -1,28 +1,27 @@
 ﻿namespace TableSBS
 {
+    using Microsoft.Azure.CosmosDB.Table;
+    using Microsoft.Azure.Storage;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
-    using Microsoft.WindowsAzure.Storage;
-    using Microsoft.WindowsAzure.Storage.Table;
     using System.Linq;
-    using System.Threading.Tasks;
-    using System.Collections.Concurrent;
 
     /// <summary>
-    /// This sample program shows how to use the Azure storage SDK to work with premium tables (created using the Azure Cosmos DB service)
+    /// This sample program shows how to use the Azure Cosmos DB Table API with .NET
     /// </summary>
     public class Program
     {
         /// <summary>
-        /// Run common Table CRUD and query operations using the Azure Cosmos DB endpoints ("premium tables")
+        /// Run common Table CRUD and query operations using the Azure Cosmos DB Table API endpoints
         /// </summary>
         /// <param name="args">Command line arguments</param>
         public static void Main(string[] args)
         {
-            string connectionString = ConfigurationManager.AppSettings["PremiumStorageConnectionString"];
-            if (args.Length >= 1 && args[0] == "Standard")
+            string connectionString = ConfigurationManager.AppSettings["CosmosDBStorageConnectionString"];
+            Boolean useAzureTablestorage = (args.Length >= 1 && args[0] == "Standard");
+            if (useAzureTablestorage)
             {
                 connectionString = ConfigurationManager.AppSettings["StandardStorageConnectionString"];
             }
@@ -32,23 +31,21 @@
             {
                 numIterations = int.Parse(args[1]);
             }
-
-            // The connnection string must set TableEndpoint = the Azure Cosmos DB account. For example:
-            // "DefaultEndpointsProtocol=https;AccountName=<StorageAccountName>;AccountKeyTableEndpoint=https://<account-name>.documents.azure.com"
-            // If the AccountKeyTableEndpoint is omitted, then it connects to the storage account's Table service endpoint as always
+            
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 
-            // Azure Cosmos DB supports a few configuration options for instantiating the CloudTableClient, again via AppSettings
-            // Some key ones you can manage are: 
-            // - TableConnectionMode (Gateway, Direct) - we recommend Direct, the default, for best latency/throughput
-            // - TableConnectionProtocol (Https, Tcp) - we recommend Tcp, the default, for best latency/throughput
-            // - TablePreferredLocations - array of Azure regions. You can configure Azure Cosmos DB accounts with 1-30+ regions and configure the SDK for multi-homing
-            // - TableConsistencyLevel (Strong, BoundedStaleness, ConsistentPrefix, Session, Eventual) - this allows you to tradeoff latency, availability, and consistency in multi-region configurations
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+            TableConnectionPolicy tableConnectionPolicy = new TableConnectionPolicy();
+            tableConnectionPolicy.EnableEndpointDiscovery = true;
+            tableConnectionPolicy.UseDirectMode = true;
+            tableConnectionPolicy.UseTcpProtocol = true;
 
+            CloudTableClient tableClient = useAzureTablestorage ?
+                storageAccount.CreateCloudTableClient() :
+                storageAccount.CreateCloudTableClient(tableConnectionPolicy, Microsoft.Azure.CosmosDB.ConsistencyLevel.Session);
+            
             Program p = new Program();
 
-            p.Run(tableClient, numIterations);
+            p.Run(tableClient, numIterations, useAzureTablestorage);
         }
 
         /// <summary>
@@ -57,17 +54,22 @@
         /// </summary>
         /// <param name="tableClient">The Azure Table storage client</param>
         /// <param name="numIterations">Number of iterations</param>
-        public void Run(CloudTableClient tableClient, int numIterations)
+        /// <param name="useAzureTablestorage">If an Azure Table storage connection string is being used</param>
+        public void Run(CloudTableClient tableClient, int numIterations, Boolean useAzureTablestorage)
         {
             Console.WriteLine("Creating Table if it doesn't exist...");
-
-            // Azure Cosmos DB supports a reserved throughput model. You can configure the default throughput per table by 
-            // configuring the AppSetting for "TableThroughput" in terms of RU (request units) per second. 1 RU = 1 read of a 1KB document.
-            // All operations are expressed in terms of RUs based on their CPU, memory, and IOPS consumption.
-            // NOTE: While Table storage SDK does not currently support modifying throughput, you can change the throughput instantaneously
-            // using the Azure portal or Azure CLI.
+            
             CloudTable table = tableClient.GetTableReference("people");
-            table.CreateIfNotExists();
+            if (useAzureTablestorage) {
+                table.CreateIfNotExists();
+            } else
+            {
+                // Azure Cosmos DB supports a reserved throughput model. You can configure the default throughput per table by 
+                // configuring the AppSetting for "TableThroughput" in terms of RU (request units) per second. 1 RU = 1 read of a 1KB document.
+                // All operations are expressed in terms of RUs based on their CPU, memory, and IOPS consumption.
+                // The number of RUs to be used by the table can be submitted as an argument here.
+                table.CreateIfNotExists(throughput: 400);
+            }
 
             List<CustomerEntity> items = new List<CustomerEntity>();
             List<double> latencies = new List<double>();
@@ -86,7 +88,7 @@
                     PhoneNumber = "425-555-0102",
                     Bio = GetRandomString(1000)
                 };
-
+                
                 // Azure Cosmos DB is designed for guaranteed low latency at any scale, across the world
                 // Writes in Azure Cosmos DB complete <10ms at p99 and ~6ms at p50. These are sychronously replicated, 
                 // durably committed, and all content indexed. 
@@ -185,6 +187,7 @@
             Console.WriteLine($"\n\tp0:{latencies[0]}, p50: {latencies[(int)(numIterations * 0.50)]}, p90: {latencies[(int)(numIterations * 0.90)]}. p99: {latencies[(int)(numIterations * 0.99)]}");
             Console.WriteLine("\n");
 
+            #region DeleteTable
             Console.WriteLine("Running deletes: ");
             latencies.Clear();
 
@@ -206,6 +209,7 @@
             latencies.Sort();
             Console.WriteLine($"\n\tp0:{latencies[0]}, p50: {latencies[(int)(numIterations * 0.50)]}, p90: {latencies[(int)(numIterations * 0.90)]}. p99: {latencies[(int)(numIterations * 0.99)]}");
             Console.WriteLine("\n");
+            #endregion
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
